@@ -18,21 +18,48 @@ public class AutomaticPlayer extends SimpleSpectator implements Player {
   // En plus du contrat de Spectator, cette m�thode maintient currentNode,
   // cad le noeud qui correspond � l'�tat courant du jeu.
   @Override
+
   public void play(boolean isLeftMove, State state) {
-    if (state.isBlueToPlay()) {
+      super.play(isLeftMove, state); // met à jour currentState
 
+      if (currentNode == null) return;
 
-
-    }
-    // TODO
+      if (isLeftMove) {
+          currentNode = currentNode.getLeftChild();
+      } else {
+          currentNode = currentNode.getRightChild();
+      }
   }
+
 
   // Cette m�thode est appel�e pour connaitre le coup de ce joueur :
   // 1) Elle renvoie vrai si ce joueur joue la barre de gauche, et
   // 2) Elle renvoie faux si ce joueur joue la barre de droite.
   @Override
   public boolean nextPlay() {
-    // TODO
-    return true;
+
+      Tree left = currentNode.getLeftChild();
+      Tree right = currentNode.getRightChild();
+
+      Triplet leftVal = left.getMinimaxValue();
+      Triplet rightVal = right.getMinimaxValue();
+
+      boolean bestIsLeft;
+
+      if (currentNode.getState().isBlueToPlay()) {
+          bestIsLeft = leftVal.getMinBlue() >= rightVal.getMinBlue();
+      } else {
+          bestIsLeft = leftVal.getMinOrange() >= rightVal.getMinOrange();
+      }
+
+
+      if (bestIsLeft) {
+          currentNode = left;
+      } else {
+          currentNode = right;
+      }
+
+      return bestIsLeft;
   }
+
 }
